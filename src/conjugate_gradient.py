@@ -9,7 +9,7 @@ def solve(A, b, **args):
       savelog: bool, write log file.
     """
     dim = len(b)
-    x = np.zeros(dim) # initial_value
+    x = np.zeros(dim)  # initial_value
     r = b - np.dot(A, x)
     p = r
     r_ss = np.dot(r.T, r)
@@ -20,10 +20,11 @@ def solve(A, b, **args):
     if args.get('savelog', False):
         _flog = open("cg.log", 'w')
         _flog.write('k,x,r,p,a,b\n')
-        _flog.write(f'{k},{np.linalg.norm(x):10.4e},{np.linalg.norm(r):10.4e},{np.linalg.norm(p):10.4e},nan,nan\n')
+        _flog.write(f'{k},{np.linalg.norm(x):9.3e},{np.linalg.norm(r):9.3e},'
+                    + f'{np.linalg.norm(p):9.3e},nan,nan\n')
     while True:
         print(f'k={k} res={r_ss} {len(p)}')
-        if k >= min((lambda v : v if v > 0 else dim)(max_itr), len(p)):
+        if k >= min((lambda v: v if v > 0 else dim)(max_itr), len(p)):
             break
         # Calculate A*p
         Ap = np.dot(A, p)
@@ -41,25 +42,27 @@ def solve(A, b, **args):
         r_ss = r_ss_temp
         k = k + 1
         if _flog is not None:
-            _flog.write(f'{k},{np.linalg.norm(x):10.4e},{np.linalg.norm(r):10.4e},{np.linalg.norm(p):10.4e}' \
-                + f',{_a:10.4e},{_b:10.4e}\n')
+            _flog.write(f'{k},{np.linalg.norm(x):9.3e},'
+                        + f'{np.linalg.norm(r):9.3e},'
+                        + f'{np.linalg.norm(p):10.4e},{_a:10.4e},{_b:10.4e}\n')
     if _flog is not None:
         _flog.close()
     return x
+
 
 if __name__ == '__main__':
     A = np.array([[1.1, -2.1, 3.0],
                   [0.0, 0.2,  0.5],
                   [1.5, -0.1, 2.0]])
     A = A * A.T
-    b = np.array([1.1, 0.1,-2.4])
+    b = np.array([1.1, 0.1, -2.4])
     ans = solve(A, b)
     print(f'rank(A)={np.linalg.matrix_rank(A)}')
     w, v = np.linalg.eig(A)
     print(f'eigen: {w}')
-    #print(f'ans={ans}')
-    r = b - np.dot(A,ans)
-    #print(f'b=Ax={b_a}')
+    # print(f'ans={ans}')
+    r = b - np.dot(A, ans)
+    # print(f'b=Ax={b_a}')
     print(f'norm(b - A*x)={np.linalg.norm(r)}')
     for v in r:
         print(v)
